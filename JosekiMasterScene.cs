@@ -1,11 +1,8 @@
-﻿using Baduk;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Text;
-using Microsoft.Win32;
-using System.Windows;
 using System.Windows.Threading;
+using Baduk;
+using Microsoft.Win32;
 
 namespace JosekiMaster
 {
@@ -37,7 +34,9 @@ namespace JosekiMaster
         public int Click_X = -1, Click_Y = -1;
         public bool ShiftPressed = false;
 
+        public string TitleText = null;
         public string TopLeftText = "";
+        public string TopRightText = "";
 
         public string CharacterEmotion = "liza-neutral";
         public int CharacterWidth = 600, CharacterHeight = 400;
@@ -59,12 +58,12 @@ namespace JosekiMaster
 
         public void LeftClick(int pX, int pY)
         {
-            if(BoardEnabled && !ResultPositionDemo)
+            if (BoardEnabled && !ResultPositionDemo)
             {
                 CalculateClickPosition(pX, pY);
             }
 
-            if(State == "training")
+            if (State == "training")
             {
                 if (ResultPositionDemo)
                 {
@@ -74,14 +73,14 @@ namespace JosekiMaster
                 else
                 {
                     MakeMove(Click_X, Click_Y);
-                    if(LastMoveCorrect && !JosekiFinished)
+                    if (LastMoveCorrect && !JosekiFinished)
                     {
                         BoardEnabled = false;
                         MakeNextMoveTimer.Start();
                     }
                 }
             }
-            if(State == "learning")
+            if (State == "learning")
             {
                 if (ResultPositionDemo)
                 {
@@ -91,16 +90,16 @@ namespace JosekiMaster
                 else
                 {
                     MakeMove(Click_X, Click_Y);
-                    if(LastMoveCorrect)
+                    if (LastMoveCorrect)
                     {
                         UpdateHint();
                     }
                 }
             }
 
-            if(State == "editor-starting-stones")
+            if (State == "editor-starting-stones")
             {
-                if(ShiftPressed)
+                if (ShiftPressed)
                 {
                     TempJoseki.StartingStones.Add(new BadukStone(Click_X, Click_Y, 1));
                     Board.PlaceStone(Click_X, Click_Y, 1);
@@ -112,7 +111,7 @@ namespace JosekiMaster
                 }
             }
 
-            if(State == "editor-writing-moves")
+            if (State == "editor-writing-moves")
             {
                 MakeMove(Click_X, Click_Y);
             }
@@ -223,7 +222,7 @@ namespace JosekiMaster
             if (State == "learning")
             {
                 CurrentJoseki++;
-                if(CurrentJoseki >= JosekiList.JosekiList.Count)
+                if (CurrentJoseki >= JosekiList.JosekiList.Count)
                 {
                     CurrentJoseki = 0;
                 }
@@ -239,7 +238,7 @@ namespace JosekiMaster
 
         public void DecrementIndex()
         {
-            if(CurrentJoseki > 0)
+            if (CurrentJoseki > 0)
             {
                 CurrentJoseki--;
             }
@@ -248,20 +247,20 @@ namespace JosekiMaster
         public void ShowResultPosition()
         {
             Board.Clear();
-            if(JosekiList.JosekiList.Count == 0)
+            if (JosekiList.JosekiList.Count == 0)
             {
                 return;
             }
 
-            if(State == "training" || State == "learning" || State == "editor-overview")
+            if (State == "training" || State == "learning" || State == "editor-overview")
             {
                 for (int i = 0; i < JosekiList.JosekiList[CurrentJoseki].StartingStones.Count; i++)
                 {
-                    Board.PlaceStone(   JosekiList.JosekiList[CurrentJoseki].StartingStones[i].X,
+                    Board.PlaceStone(JosekiList.JosekiList[CurrentJoseki].StartingStones[i].X,
                                         JosekiList.JosekiList[CurrentJoseki].StartingStones[i].Y,
                                         JosekiList.JosekiList[CurrentJoseki].StartingStones[i].Color);
                 }
-                if(JosekiList.JosekiList[CurrentJoseki].StartingStones.Count > 0)
+                if (JosekiList.JosekiList[CurrentJoseki].StartingStones.Count > 0)
                 {
                     Board.CurrentColor = 1;
                 }
@@ -269,11 +268,11 @@ namespace JosekiMaster
                 {
                     Board.MakeMove(JosekiList.JosekiList[CurrentJoseki].Moves[i].X, JosekiList.JosekiList[CurrentJoseki].Moves[i].Y);
                 }
-                if(State == "training" || State == "learning")
+                if (State == "training" || State == "learning")
                 {
                     ResultPositionDemo = true;
                 }
-                if(State == "editor-overview")
+                if (State == "editor-overview")
                 {
                     ResultPositionDemo = false;
                 }
@@ -286,7 +285,7 @@ namespace JosekiMaster
             Board.Clear();
             CurrentMove = 0;
             JosekiFinished = false;
-            if(State == "training")
+            if (State == "training")
             {
                 SetEmotion("liza-neutral");
                 for (int i = 0; i < JosekiList.JosekiList[CurrentJoseki].StartingStones.Count; i++)
@@ -302,10 +301,10 @@ namespace JosekiMaster
                 BoardEnabled = true;
                 UpdateHint();
             }
-            if(State == "learning")
+            if (State == "learning")
             {
                 SetEmotion("liza-neutral");
-                if(JosekiList.JosekiList.Count > 0)
+                if (JosekiList.JosekiList.Count > 0)
                 {
                     for (int i = 0; i < JosekiList.JosekiList[CurrentJoseki].StartingStones.Count; i++)
                     {
@@ -321,21 +320,21 @@ namespace JosekiMaster
                     UpdateHint();
                 }
             }
-            if(State == "editor-starting-stones")
+            if (State == "editor-starting-stones")
             {
                 TempJoseki.StartingStones.Clear();
                 Board.Clear();
             }
-            if(State == "editor-writing-moves")
+            if (State == "editor-writing-moves")
             {
                 TempJoseki.Moves.Clear();
                 for (int i = 0; i < TempJoseki.StartingStones.Count; i++)
                 {
-                    Board.PlaceStone(   TempJoseki.StartingStones[i].X,
+                    Board.PlaceStone(TempJoseki.StartingStones[i].X,
                                         TempJoseki.StartingStones[i].Y,
                                         TempJoseki.StartingStones[i].Color);
                 }
-                if(TempJoseki.StartingStones.Count > 0)
+                if (TempJoseki.StartingStones.Count > 0)
                 {
                     Board.CurrentColor = 1;
                 }
@@ -344,21 +343,53 @@ namespace JosekiMaster
 
         void UpdateHint()
         {
-            if(State == "training")
+            TopRightText = string.Empty;
+
+            if (State == "training")
             {
                 BoardRenderer.ClearHint();
+
+                if (CurrentJoseki < JosekiList.JosekiList.Count)
+                {
+                    var minMove = Math.Max(0, CurrentMove - 2);
+                    var maxMove = Math.Min(CurrentMove + 1, JosekiList.JosekiList[CurrentJoseki].Moves.Count);
+
+                    var textBuilder = new StringBuilder();
+                    for (var i = minMove; i < maxMove; ++i)
+                    {
+                        if (i != minMove) textBuilder.AppendLine();
+
+                        textBuilder.AppendLine($"Ruch {i + 1}: {JosekiList.JosekiList[CurrentJoseki].Moves[i].Comment}");
+                    }
+                    TopRightText = textBuilder.ToString();
+                }
             }
-            if(State == "learning")
+            else if (State == "learning")
             {
-                if(CurrentMove < JosekiList.JosekiList[CurrentJoseki].Moves.Count)
+                if (CurrentMove < JosekiList.JosekiList[CurrentJoseki].Moves.Count)
                 {
                     BoardRenderer.SetHint(JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].Color,
                                             JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].X,
                                             JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].Y);
                 }
-                if(JosekiFinished)
+                if (JosekiFinished)
                 {
                     BoardRenderer.ClearHint();
+
+                }
+                else if (CurrentJoseki < JosekiList.JosekiList.Count)
+                {
+                    var minMove = Math.Max(0, CurrentMove - 2);
+                    var maxMove = Math.Min(CurrentMove + 1, JosekiList.JosekiList[CurrentJoseki].Moves.Count);
+
+                    var textBuilder = new StringBuilder();
+                    for (var i = minMove; i < maxMove; ++i)
+                    {
+                        if (i != minMove) textBuilder.AppendLine();
+
+                        textBuilder.AppendLine($"Ruch {i + 1}: {JosekiList.JosekiList[CurrentJoseki].Moves[i].Comment}");
+                    }
+                    TopRightText = textBuilder.ToString();
                 }
             }
         }
@@ -374,7 +405,7 @@ namespace JosekiMaster
             {
                 PreviousColor = 1;
             }
-            
+
             if (JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].X == pX &&
                 JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].Y == pY &&
                 JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].Color == PreviousColor)
@@ -391,7 +422,7 @@ namespace JosekiMaster
             if (LastMoveCorrect && CurrentMove == JosekiList.JosekiList[CurrentJoseki].Moves.Count - 1)
             {
                 BoardEnabled = false;
-                JosekiFinished = true;                
+                JosekiFinished = true;
             }
         }
 
@@ -399,19 +430,19 @@ namespace JosekiMaster
         {
             bool ClickedSlotEmpty = Board.isSlotEmpty(pX, pY);
             bool ClickedSlotKo = false;
-            if(pX == Board.ko_X && pY == Board.ko_Y)
+            if (pX == Board.ko_X && pY == Board.ko_Y)
             {
                 ClickedSlotKo = true;
             }
 
-            if(State == "training")
+            if (State == "training")
             {
                 if (ClickedSlotEmpty && !ClickedSlotKo)
                 {
                     Board.MakeMove(pX, pY);
                     CheckLastMove(pX, pY);
                     CurrentMove++;
-                    if(JosekiFinished)
+                    if (JosekiFinished)
                     {
                         SetEmotion("liza-happy");
                         RepeatJosekiTimer.Start();
@@ -422,7 +453,7 @@ namespace JosekiMaster
                     LastMoveCorrect = false;
                 }
             }
-            if(State == "learning")
+            if (State == "learning")
             {
                 if (ClickedSlotEmpty && !ClickedSlotKo)
                 {
@@ -441,11 +472,14 @@ namespace JosekiMaster
                 }
             }
 
-            if(State == "editor-writing-moves")
+            if (State == "editor-writing-moves")
             {
                 if (ClickedSlotEmpty && !ClickedSlotKo)
                 {
-                    TempJoseki.Moves.Add(new BadukMove(Board.CurrentColor, Click_X, Click_Y));
+                    var comment = InputDialog.Prompt("Comment this move: (optional)", "Comment", inputType: InputDialog.InputType.Text)?.Trim();
+                    comment = string.IsNullOrEmpty(comment) ? null : comment;
+
+                    TempJoseki.Moves.Add(new BadukMove(Board.CurrentColor, Click_X, Click_Y, comment));
                     Board.MakeMove(Click_X, Click_Y);
                 }
             }
@@ -453,9 +487,9 @@ namespace JosekiMaster
 
         public void MakeNextMove()
         {
-            if(!JosekiFinished)
+            if (!JosekiFinished)
             {
-                MakeMove(   JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].X,
+                MakeMove(JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].X,
                             JosekiList.JosekiList[CurrentJoseki].Moves[CurrentMove].Y);
                 UpdateHint();
             }
@@ -463,6 +497,8 @@ namespace JosekiMaster
 
         public void UpdateInfoBlock()
         {
+            TitleText = CurrentJoseki >= 0 && CurrentJoseki < JosekiList.JosekiList.Count ? JosekiList.JosekiList[CurrentJoseki].Title : null;
+
             TopLeftText = "";
             if (State == "started")
             {
@@ -472,13 +508,13 @@ namespace JosekiMaster
             if (State == "training")
             {
                 TopLeftText += "Training mode";
-                TopLeftText += "\nCurrent joseki - " + (CurrentJoseki+1).ToString();
+                TopLeftText += "\nCurrent joseki - " + (CurrentJoseki + 1).ToString();
                 if (!ResultPositionDemo)
                 {
                     TopLeftText += "\nRight click - reset position";
                 }
             }
-            if(State == "learning")
+            if (State == "learning")
             {
                 TopLeftText += "Learning mode";
                 TopLeftText += "\nSpace - go to next joseki";
@@ -516,34 +552,23 @@ namespace JosekiMaster
 
             if (State == "about")
             {
-                TopLeftText = "Skillplay Joseki Master v1.0";
-                TopLeftText += "\n\nHello, World!";
-                TopLeftText += "\nMy name is Nikolai Pridachin. I'm from Russia, Saint-Petersburg.";
-                TopLeftText += "\n\nWith this program you can memorize joseki effectively.";
-                TopLeftText += "\n\nUsing Editor mode you can create you own joseki collections to training, or share with friends.";
-                TopLeftText += "\n\nThis program is distributed free of charge. But if you liked it, there is an opportunity to support me through Patreon (See the Donate menu section)";
-                TopLeftText += "\nI plan to create a number of programs, mainly related to the game of go. Your support would motivate me very much.";
-                TopLeftText += "\nAlso we will happy to see you in our Discord server (see menu)!";
-                TopLeftText += "\n\nDetails for direct donation:";
-                TopLeftText += "\nSberbank Visa Card - 4274 3200 3616 6646";
-                TopLeftText += "\nYandex.Money - 4100 1162 8438 845";
+                TopLeftText =
+@"A Go/Baduk/Weiqi joseki training software.
+Oryginally developed by Nikolay Pridachin and opened for development by Crazy Samurais of Go Educational Center.
 
-                TopLeftText += "\n\nAlso meet Liza - the character of the upcoming game, which I slowly develop.";
-                TopLeftText += "\nThis cute girl was painted by Hanqi.";
-                TopLeftText += "\nYou can check out her other works here - vk.com/hanqi";
-
-                TopLeftText += "\n\nI hope that this program will be useful to you!";
-                TopLeftText += "\n\nBest regards,";
-                TopLeftText += "\nNikolai Pridachin";
+01.03.2022: Extended version developed by Lukasz Struzik to add Joseki names, move comments and GUI adjustments.
+25.08.2021: GitHub repository open by Crazy Samurais of Go and source code shared.
+30.07.2021: Original Source code shared by Nikolay Pridachin to Crazy Samurais of Go (https://szalenisamuraje.org/).
+13.05.2020 Skillplay Joseki Master 1.0 developed by Nikolay Pridachin and shared at at this link https://yadi.sk/d/kFrxh2LsAl-fSQ.";
             }
         }
 
         public void RepeatJoseki()
         {
-            if(State == "training" || State == "learning")
+            if (State == "training" || State == "learning")
             {
                 SetEmotion("liza-neutral");
-                if (PlayerFirstMove == true)
+                if (PlayerFirstMove)
                 {
                     PlayerFirstMove = false;
                     ResetPosition();
@@ -552,12 +577,12 @@ namespace JosekiMaster
                 else
                 {
                     PlayerFirstMove = true;
-                    if(State == "training")
+                    if (State == "training")
                     {
                         IncrementIndex();
                         ShowResultPosition();
                     }
-                    if(State == "learning")
+                    if (State == "learning")
                     {
                         ResetPosition();
                         MakeNextMove();
@@ -569,7 +594,7 @@ namespace JosekiMaster
 
         public void EditorGoNext()
         {
-            if(State == "editor-overview")
+            if (State == "editor-overview")
             {
                 IncrementIndex();
                 ShowResultPosition();
@@ -592,6 +617,13 @@ namespace JosekiMaster
             Board.Clear();
             BoardEnabled = true;
             TempJoseki = new BadukJoseki();
+
+            var title = InputDialog.Prompt("Enter title: (optional)", "New Joseki", inputType: InputDialog.InputType.Text)?.Trim();
+            if (!string.IsNullOrEmpty(title))
+            {
+                TempJoseki.Title = title.Trim();
+            }
+
             SetState("editor-starting-stones");
         }
 
@@ -603,7 +635,7 @@ namespace JosekiMaster
 
         public void EditorSaveCurrentJoseki()
         {
-            if(State == "editor-writing-moves")
+            if (State == "editor-writing-moves")
             {
                 JosekiList.JosekiList.Add(TempJoseki);
                 if (CollectionFilenameWithPath.Length > 0)
@@ -619,16 +651,16 @@ namespace JosekiMaster
         {
             if (State == "editor-overview")
             {
-                if( JosekiList.JosekiList.Count > 0 && 
-                    CurrentJoseki >= 0 && 
+                if (JosekiList.JosekiList.Count > 0 &&
+                    CurrentJoseki >= 0 &&
                     CurrentJoseki < JosekiList.JosekiList.Count &&
                     CollectionFilenameWithPath.Length > 0)
                 {
                     JosekiList.JosekiList.RemoveAt(CurrentJoseki);
-                    if(CurrentJoseki >= JosekiList.JosekiList.Count)
+                    if (CurrentJoseki >= JosekiList.JosekiList.Count)
                     {
                         CurrentJoseki = JosekiList.JosekiList.Count - 1;
-                        if(CurrentJoseki < 0)
+                        if (CurrentJoseki < 0)
                         {
                             CurrentJoseki = 0;
                         }
@@ -676,8 +708,8 @@ namespace JosekiMaster
                 BoardRenderer.cell_size = 45;
                 BoardRenderer.ScaleFactor = 1.0;
                 BoardRenderer.SetResolution(pX, pY);
-                CharacterWidth = (int)(400);
-                CharacterHeight = (int)(600);
+                CharacterWidth = 400;
+                CharacterHeight = 600;
                 FontSize = 16;
             }
             if (pX == 1280 && pY == 720)

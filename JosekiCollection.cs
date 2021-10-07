@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Web;
 using Baduk;
 
 
@@ -13,6 +12,8 @@ namespace JosekiMaster
         public List<BadukMove> Moves;
         public List<BadukStone> StartingStones;
         public int StartingStonesCount = 0;
+
+        public string Title { get; set; }
 
         public BadukJoseki()
         {
@@ -29,47 +30,63 @@ namespace JosekiMaster
         {
             StartingStones.Clear();
             Moves.Clear();
+            Title = null;
+
             string[] parts = pText.Split(';');
-            for(int i = 0; i < parts.Count(); i++)
+            int i = 0, len;
+
+            if (parts.Length > 0)
+            {
+                // Try read title
+                var firstPart = parts[0];
+                len = firstPart.Length;
+                if (firstPart[0] == '[' && firstPart[len - 1] == ']')
+                {
+                    Title = HttpUtility.UrlDecode(firstPart.Substring(1, len - 2)).Trim();
+                    ++i;
+                }
+            }
+
+            string comment;
+            for (; i < parts.Length; i++)
             {
                 string[] elements = parts[i].Split(',');
                 int NumElements = elements.Count();
-                if(NumElements == 2)
+
+                if (NumElements == 2)
                 {
-                    bool check;
-                    int CommandParam;
-                    check = Int32.TryParse(elements[1], out CommandParam);
-                    if (check == false)
+                    if (!int.TryParse(elements[1], out int CommandParam))
                     {
                         continue;
                     }
-                    if(elements[0] == "s")
+                    if (elements[0] == "s")
                     {
                         StartingStonesCount = CommandParam;
                     }
                 }
-                if (NumElements == 3)
+
+                if (NumElements is 3 or 4)
                 {
-                    bool check;
-                    int tempColor, temp_X, temp_Y;
-                    check = Int32.TryParse(elements[0], out tempColor);
-                    if (check == false)
+                    if (!int.TryParse(elements[0], out int tempColor))
                     {
                         continue;
                     }
-                    check = Int32.TryParse(elements[1], out temp_X);
-                    if (check == false)
+
+                    if (!int.TryParse(elements[1], out int temp_X))
                     {
                         continue;
                     }
-                    check = Int32.TryParse(elements[2], out temp_Y);
-                    if (check == false)
+
+                    if (!int.TryParse(elements[2], out int temp_Y))
                     {
                         continue;
                     }
-                    if(StartingStones.Count >= StartingStonesCount)
+
+                    comment = (NumElements == 4) ? elements[3].Trim() : null;
+
+                    if (StartingStones.Count >= StartingStonesCount)
                     {
-                        Moves.Add(new BadukMove(tempColor, temp_X, temp_Y));
+                        Moves.Add(new BadukMove(tempColor, temp_X, temp_Y, comment == null ? null : HttpUtility.UrlDecode(comment)));
                     }
                     else
                     {
@@ -80,7 +97,7 @@ namespace JosekiMaster
         }
     }
 
-    class JosekiCollection
+    internal class JosekiCollection
     {
         public List<BadukJoseki> JosekiList;
 
@@ -108,20 +125,32 @@ namespace JosekiMaster
         public void Export(string pFileName)
         {
             List<string> lines = new List<string>();
-            foreach(BadukJoseki CurrentJoseki in JosekiList)
+            foreach (BadukJoseki CurrentJoseki in JosekiList)
             {
                 string current_line = "";
-                if(CurrentJoseki.StartingStones.Count > 0)
+                if (!string.IsNullOrEmpty(CurrentJoseki.Title))
+                {
+                    current_line += "[" + HttpUtility.UrlEncode(CurrentJoseki.Title) + "];";
+                }
+
+                if (CurrentJoseki.StartingStones.Count > 0)
                 {
                     current_line += "s," + CurrentJoseki.StartingStones.Count + ";";
                 }
-                for(int i = 0; i < CurrentJoseki.StartingStones.Count; i++)
+
+                for (int i = 0; i < CurrentJoseki.StartingStones.Count; i++)
                 {
                     current_line += CurrentJoseki.StartingStones[i].Color.ToString() + ',' + CurrentJoseki.StartingStones[i].X.ToString() + ',' + CurrentJoseki.StartingStones[i].Y.ToString() + ";";
                 }
-                foreach(BadukMove CurrentMove in CurrentJoseki.Moves)
+
+                foreach (BadukMove CurrentMove in CurrentJoseki.Moves)
                 {
-                    current_line += CurrentMove.Color.ToString() + ',' +  CurrentMove.X.ToString() + ',' + CurrentMove.Y.ToString() + ";";
+                    current_line += CurrentMove.Color.ToString() + ',' + CurrentMove.X.ToString() + ',' + CurrentMove.Y.ToString();
+                    if (!string.IsNullOrEmpty(CurrentMove.Comment))
+                    {
+                        current_line += "," + HttpUtility.UrlEncode(CurrentMove.Comment);
+                    }
+                    current_line += ";";
                 }
                 current_line = current_line.Trim(';');
                 lines.Add(current_line);
@@ -137,7 +166,7 @@ namespace JosekiMaster
 
         public void Remove(int param)
         {
-            if(param >= 0 && param <= JosekiList.Count - 1)
+            if (param >= 0 && param <= JosekiList.Count - 1)
             {
                 JosekiList.RemoveAt(param);
             }
@@ -145,10 +174,10 @@ namespace JosekiMaster
 
         public void Add(BadukJoseki pJoseki)
         {
-            if(pJoseki.Moves.Count > 0)
+            if (pJoseki.Moves.Count > 0)
             {
                 JosekiList.Add(pJoseki);
             }
-        } 
+        }
     }
 }
