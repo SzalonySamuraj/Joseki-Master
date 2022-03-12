@@ -1,12 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using JosekiMaster;
+﻿using System.Collections.Generic;
 
 namespace Baduk
-{    
+{
     public struct BadukStone
     {
         public int X, Y;
@@ -32,12 +27,17 @@ namespace Baduk
     public struct BadukMove
     {
         public int X, Y, Color;
-        public BadukMove(int pColor, int pX, int pY)
+        public string Comment { get; set; }
+
+
+        public BadukMove(int pColor, int pX, int pY, string comment = null)
         {
             X = pX;
             Y = pY;
+            Comment = comment;
             Color = pColor;
         }
+
 
         public void Init(int pColor, int pX, int pY)
         {
@@ -58,7 +58,7 @@ namespace Baduk
             Type = pType;
         }
     }
-    
+
     class BadukGroup
     {
         public List<BadukStone> stones;
@@ -89,7 +89,7 @@ namespace Baduk
         public void CalculateDame(BadukBoard Board)
         {
             liberties.Clear();
-            for(int i = 0; i < stones.Count; i++)
+            for (int i = 0; i < stones.Count; i++)
             {
                 bool is_slot_at_right = Board.ValidateCoords(stones[i].X + 1, stones[i].Y);
                 bool is_dame_at_right = !(isStoneOnBoard(Board, stones[i].X + 1, stones[i].Y));
@@ -99,12 +99,12 @@ namespace Baduk
                 bool is_dame_at_top = !(isStoneOnBoard(Board, stones[i].X, stones[i].Y - 1));
                 bool is_slot_at_bottom = Board.ValidateCoords(stones[i].X, stones[i].Y + 1);
                 bool is_dame_at_bottom = !(isStoneOnBoard(Board, stones[i].X, stones[i].Y + 1));
-                if(is_slot_at_right && is_dame_at_right)
+                if (is_slot_at_right && is_dame_at_right)
                 {
                     bool is_right_already_in_list = false;
                     for (int j = 0; j < liberties.Count; j++)
                     {
-                        if(liberties[j].X == stones[i].X + 1 && liberties[j].Y == stones[i].Y)
+                        if (liberties[j].X == stones[i].X + 1 && liberties[j].Y == stones[i].Y)
                         {
                             is_right_already_in_list = true;
                         }
@@ -167,20 +167,20 @@ namespace Baduk
         {
             bool result = false;
             bool CoordsValidated = Board.ValidateCoords(pX, pY);
-            if(CoordsValidated == false)
+            if (CoordsValidated == false)
             {
                 return false;
             }
-            for(int i = 0; i < Board.stones.Count; i++)
+            for (int i = 0; i < Board.stones.Count; i++)
             {
-                if(Board.stones[i].X == pX && Board.stones[i].Y == pY)
+                if (Board.stones[i].X == pX && Board.stones[i].Y == pY)
                 {
                     result = true;
                 }
             }
             return result;
         }
-        
+
         public int GetStoneColorInBoard(BadukBoard Board, int pX, int pY)
         {
             int result = Board.GetStoneColor(pX, pY);
@@ -207,13 +207,13 @@ namespace Baduk
             //Check stone in pX, pY
             for (int i = 0; i < Board.stones.Count; i++)
             {
-                if(Board.stones[i].X == pX && Board.stones[i].Y == pY)
+                if (Board.stones[i].X == pX && Board.stones[i].Y == pY)
                 {
                     //Stone founded
                     AddStone(Board.stones[i].X, Board.stones[i].Y, Board.stones[i].Color);
                     Color = Board.stones[i].Color;
                     WeHaveNewStonesToCheck = true;
-                } 
+                }
                 else
                 {
                     //No stone in pX, pY
@@ -236,13 +236,13 @@ namespace Baduk
                     bool is_stone_at_top = isStoneOnBoard(Board, stones[i].X, stones[i].Y - 1);
                     bool is_stone_at_bottom = isStoneOnBoard(Board, stones[i].X, stones[i].Y + 1);
 
-                    if(is_stone_at_right)
+                    if (is_stone_at_right)
                     {
                         bool in_right_stone_in_group = isStoneInGroup(stones[i].X + 1, stones[i].Y);
                         if (in_right_stone_in_group == false)
                         {
                             int right_stone_color = GetStoneColorInBoard(Board, stones[i].X + 1, stones[i].Y);
-                            if(right_stone_color == Color)
+                            if (right_stone_color == Color)
                             {
                                 AddStone(stones[i].X + 1, stones[i].Y, stones[i].Color);
                                 WeHaveNewStonesToCheck = true;
@@ -290,7 +290,7 @@ namespace Baduk
                     }
 
                 }
-                
+
                 if (IterationCount > 2000)
                 {
                     WeHaveNewStonesToCheck = false;
@@ -333,13 +333,13 @@ namespace Baduk
             size_y = 19;
             ko_X = -1;
             ko_Y = -1;
-            LastMoveCorrect = true;            
+            LastMoveCorrect = true;
         }
 
         public void PlaceStone(int pX, int pY, int pColor)
         {
             bool CoordsValidated = ValidateCoords(pX, pY);
-            if(CoordsValidated)
+            if (CoordsValidated)
             {
                 stones.Add(new BadukStone(pX, pY, pColor));
             }
@@ -360,7 +360,7 @@ namespace Baduk
             bool CoordsValidated = ValidateCoords(pX, pY);
             bool RescrictedMove = CheckRestrictedMove(pX, pY);
 
-            if(SlotEmpty && CoordsValidated && !RescrictedMove)
+            if (SlotEmpty && CoordsValidated && !RescrictedMove)
             {
                 LastMoveSuccesfull = true;
                 CurrentPlayerMove++;
@@ -369,7 +369,7 @@ namespace Baduk
                 stones.ToString();
                 CheckNearDeadGroups(pX, pY);
                 ChangeCurrentColor();
-            } 
+            }
             else
             {
                 LastMoveSuccesfull = false;
@@ -378,9 +378,9 @@ namespace Baduk
 
         public void RemoveStone(int pX, int pY)
         {
-            for(int i = 0; i < stones.Count; i++)
+            for (int i = 0; i < stones.Count; i++)
             {
-                if(stones[i].X == pX && stones[i].Y == pY)
+                if (stones[i].X == pX && stones[i].Y == pY)
                 {
                     stones.RemoveAt(i);
                     i = 0; //Reset iterator to find duplicated stones
@@ -415,10 +415,11 @@ namespace Baduk
 
         public void ChangeCurrentColor()
         {
-            if(CurrentColor == 0)
+            if (CurrentColor == 0)
             {
                 CurrentColor = 1;
-            } else
+            }
+            else
             {
                 CurrentColor = 0;
             }
@@ -429,7 +430,7 @@ namespace Baduk
             bool CoordsValidated = ValidateCoords(pX, pY);
 
             // Slot is not empty if out of board
-            if(CoordsValidated == false)
+            if (CoordsValidated == false)
             {
                 return false;
             }
@@ -446,7 +447,7 @@ namespace Baduk
 
         public bool ValidateCoords(int pX, int pY)
         {
-            if(pX >= 0 && pX < size_x && pY >= 0 && pY < size_y)
+            if (pX >= 0 && pX < size_x && pY >= 0 && pY < size_y)
             {
                 return true;
             }
@@ -474,7 +475,7 @@ namespace Baduk
 
         public void RemoveGroupFromBoard(BadukGroup Group)
         {
-            for(int i = 0; i < Group.stones.Count; i++)
+            for (int i = 0; i < Group.stones.Count; i++)
             {
                 RemoveStone(Group.stones[i].X, Group.stones[i].Y);
             }
@@ -511,20 +512,21 @@ namespace Baduk
 
         public bool CheckRestrictedMove(int pX, int pY)
         {
-            if(ko_X == pX && ko_Y == pY)
+            if (ko_X == pX && ko_Y == pY)
             {
                 return true;
             }
 
             int EnemyColor;
-            if(CurrentColor == 1)
+            if (CurrentColor == 1)
             {
                 EnemyColor = 0;
-            } else
+            }
+            else
             {
                 EnemyColor = 1;
             }
-            
+
             // Additional check
             bool is_my_slot_free = isSlotEmpty(pX, pY);
 
@@ -533,7 +535,7 @@ namespace Baduk
             bool is_free_slot_at_top = isSlotEmpty(pX, pY - 1);
             bool is_free_slot_at_bottom = isSlotEmpty(pX, pY + 1);
 
-            if(is_my_slot_free)
+            if (is_my_slot_free)
             {
                 if (is_free_slot_at_right || is_free_slot_at_left || is_free_slot_at_top || is_free_slot_at_bottom)
                 {
@@ -588,7 +590,7 @@ namespace Baduk
                 }
 
                 bool is_group_dead_after_move = isGroupDeadAfterMove(pX, pY);
-                if(is_group_dead_after_move)
+                if (is_group_dead_after_move)
                 {
                     return true;
                 }
@@ -600,7 +602,7 @@ namespace Baduk
         public bool isGroupDeadAfterMove(int pX, int pY)
         {
             bool is_slot_free = isSlotEmpty(pX, pY);
-            if(!is_slot_free)
+            if (!is_slot_free)
             {
                 return false;
             }
@@ -609,10 +611,10 @@ namespace Baduk
                 PlaceStone(pX, pY, CurrentColor);
                 BadukGroup TempGroup = new BadukGroup(this, pX, pY);
                 RemoveStone(pX, pY);
-                if(TempGroup.liberties.Count == 0)
+                if (TempGroup.liberties.Count == 0)
                 {
                     return true;
-                } 
+                }
                 else
                 {
                     return false;

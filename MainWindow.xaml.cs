@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using Baduk;
 
 namespace JosekiMaster
 {
@@ -49,6 +40,8 @@ namespace JosekiMaster
             RepeatJosekiTimer.Stop();
             Scene.InitTimers(MakeNextMoveTimer, RepeatJosekiTimer);
 
+            SetResolution(OldW, OldH);
+
             Render();
         }
 
@@ -67,10 +60,26 @@ namespace JosekiMaster
 
         void Render()
         {
+            if (Scene.State == "editor-starting-stones")
+            {
+                TitleBlock.Visibility = Visibility.Hidden;
+                CommentBlock.Visibility = Visibility.Hidden;
+            }
+            else if (Scene.State == "editor-writing-moves")
+            {
+                TitleBlock.Visibility = Visibility.Hidden;
+                CommentBlock.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                TitleBlock.Visibility = Visibility.Visible;
+                CommentBlock.Visibility = Visibility.Visible;
+            }
+
             Scene.BoardRenderer.BoardVisible = Scene.BoardVisible;
             Scene.BoardRenderer.UpdateRenderObjects();
             Scene.BoardRenderer.Render(BoardCanvas);
-            if(Scene.ResultPositionDemo)
+            if (Scene.ResultPositionDemo)
             {
                 ClickToStartImage.Visibility = Visibility.Visible;
             }
@@ -78,7 +87,7 @@ namespace JosekiMaster
             {
                 ClickToStartImage.Visibility = Visibility.Hidden;
             }
-            switch(Scene.CharacterEmotion)
+            switch (Scene.CharacterEmotion)
             {
                 case "liza-neutral":
                     ImageLiza.Source = ImageLizaNeutral;
@@ -90,12 +99,14 @@ namespace JosekiMaster
                     ImageLiza.Source = ImageLizaAngry;
                     break;
             }
+            TitleBlock.Text = Scene.TitleText;
             TopLeftTextblock.Text = Scene.TopLeftText;
+            CommentBlock.Text = Scene.TopRightText;
         }
 
         private void SetFulscreen(bool param)
         {
-            if(param == true)
+            if (param == true)
             {
                 double ClientWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
                 double ClientHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
@@ -103,7 +114,7 @@ namespace JosekiMaster
                 OldW = Scene.ClientWidth;
                 OldH = Scene.ClientHeight;
 
-                if (    (ClientWidth == 1920 && ClientHeight == 1080) ||
+                if ((ClientWidth == 1920 && ClientHeight == 1080) ||
                         (ClientWidth == 1600 && ClientHeight == 900) ||
                         (ClientWidth == 1280 && ClientHeight == 720) ||
                         (ClientWidth == 1024 && ClientHeight == 576) ||
@@ -141,7 +152,7 @@ namespace JosekiMaster
         {
             MakeNextMoveTimer.Stop();
             Scene.MakeNextMove();
-            if(!Scene.JosekiFinished)
+            if (!Scene.JosekiFinished)
             {
                 Scene.BoardEnabled = true;
             }
@@ -168,7 +179,7 @@ namespace JosekiMaster
             {
                 Scene.ShiftPressed = false;
             }
-            Scene.LeftClick(x, y);            
+            Scene.LeftClick(x, y);
             Render();
         }
 
@@ -187,7 +198,7 @@ namespace JosekiMaster
             }
             if (e.Key == Key.L)
             {
-                if(Scene.State != "learning")
+                if (Scene.State != "learning")
                 {
                     Scene.SetState("learning");
                     Render();
@@ -224,7 +235,7 @@ namespace JosekiMaster
                 Scene.EditorGoNext();
                 Render();
             }
-            if(e.Key == Key.Left)
+            if (e.Key == Key.Left)
             {
                 Scene.EditorGoPrevious();
                 Render();
@@ -244,14 +255,14 @@ namespace JosekiMaster
             }
             if (e.Key == Key.Space)
             {
-                if(Scene.State == "learning")
+                if (Scene.State == "learning")
                 {
                     Scene.IncrementIndex();
                     Scene.ShowResultPosition();
                     Render();
                 }
             }
-            if(e.Key == Key.Delete)
+            if (e.Key == Key.Delete)
             {
                 if (Scene.State == "editor-overview")
                 {
@@ -259,9 +270,9 @@ namespace JosekiMaster
                     Render();
                 }
             }
-            if(e.Key == Key.Tab)
+            if (e.Key == Key.Tab)
             {
-                if(MenuGeneral.Visibility == Visibility.Visible)
+                if (MenuGeneral.Visibility == Visibility.Visible)
                 {
                     MenuGeneral.Visibility = Visibility.Hidden;
                 }
@@ -279,7 +290,7 @@ namespace JosekiMaster
 
         private void Grid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if(Scene.State == "training")
+            if (Scene.State == "training")
             {
                 if (Scene.ResultPositionDemo == false)
                 {
@@ -303,13 +314,13 @@ namespace JosekiMaster
                 }
                 Render();
             }
-            if(Scene.State == "learning")
+            if (Scene.State == "learning")
             {
                 if (Scene.ResultPositionDemo == false)
                 {
                     if (Scene.BoardEnabled || Scene.LastMoveCorrect == false)
                     {
-                        Scene.ResetPosition();                        
+                        Scene.ResetPosition();
                     }
                 }
                 else
@@ -346,25 +357,19 @@ namespace JosekiMaster
 
         private void MenuItem_Click_4(object sender, RoutedEventArgs e)
         {
-            string targetURL = @"http://skillplay.pro";
-            System.Diagnostics.Process.Start(targetURL);
-        }
-
-        private void MenuItem_Click_5(object sender, RoutedEventArgs e)
-        {
-            string targetURL = @"http://vk.com/skillplay";
+            string targetURL = @"http://szalenisamuraje.org";
             System.Diagnostics.Process.Start(targetURL);
         }
 
         private void MenuItem_Click_6(object sender, RoutedEventArgs e)
         {
-            string targetURL = @"https://patreon.com/skillplay";
+            string targetURL = @"https://www.patreon.com/iglooo";
             System.Diagnostics.Process.Start(targetURL);
         }
 
         private void MenuItem_Click_7(object sender, RoutedEventArgs e)
         {
-            string targetURL = @"https://discord.gg/4RFAZsf";
+            string targetURL = @"https://discord.gg/uJsSGBD";
             System.Diagnostics.Process.Start(targetURL);
         }
 
@@ -417,7 +422,10 @@ namespace JosekiMaster
             ImageBackground.Height = pY;
             ImageLiza.Width = Scene.CharacterWidth;
             ImageLiza.Height = Scene.CharacterHeight;
+            TitleBlock.FontSize = Scene.FontSize * 1.5;
             TopLeftTextblock.FontSize = Scene.FontSize;
+            CommentBlock.FontSize = Scene.FontSize;
+            RightPanel.Width = pX / 5;
             Render();
         }
     }

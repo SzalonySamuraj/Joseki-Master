@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JosekiMaster"
         mc:Ignorable="d"
-        Title="Skillplay Joseki Master" Foreground="#ffffff" KeyDown="Window_KeyDown" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+        Title="Crazy Samurais of Go Joseki Master" Foreground="#ffffff" KeyDown="Window_KeyDown" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
     <Grid Background="#252526" MouseLeftButtonDown="Grid_MouseLeftButtonDown" MouseRightButtonDown="Grid_MouseRightButtonDown">
         <Menu Name="MenuGeneral" VerticalAlignment="Top" KeyboardNavigation.TabNavigation ="None">
             <MenuItem Header="File" >
@@ -29,8 +29,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Help" >
-                <MenuItem Header="Visit skillplay.pro" Click="MenuItem_Click_4" ></MenuItem>
-                <MenuItem Header="Visit vk.com/skillplay" Click="MenuItem_Click_5" ></MenuItem>
+                <MenuItem Header="Visit szalenisamuraje.org" Click="MenuItem_Click_4" ></MenuItem>
                 <MenuItem Header="About" Click="MenuItem_Click_8" ></MenuItem>
             </MenuItem>
             <MenuItem Header="Donate" >
@@ -40,9 +39,16 @@
         </Menu>
         <Image Name="ImageBackground" HorizontalAlignment="Left" Height="900" Width="1600" Margin="0,0,0,0" VerticalAlignment="Top"/>
         <Image Name="ImageLiza" Height="600" Width="400" VerticalAlignment="Bottom" HorizontalAlignment="Right" Source="src/img/liza/liza-neutral.png"/>
-        <TextBlock Name="TopLeftTextblock" HorizontalAlignment="Left" Margin="10,25,0,0" TextWrapping="Wrap" Text="Top Left Textblock" VerticalAlignment="Top" FontSize="16"/>
+        <TextBlock Name="TopLeftTextblock" HorizontalAlignment="Left" Margin="10,25,10,25" TextWrapping="Wrap" Text="Top Left Textblock" VerticalAlignment="Top" FontSize="16"/>
+        <Grid Name="RightPanel" Width="400" HorizontalAlignment="Right" Margin="10,25,10,25" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Name="TitleBlock" Grid.Row="0" Margin="10,5,10,5" TextWrapping="Wrap" Text="Top Left Textblock" VerticalAlignment="Top" FontSize="24"/>
+            <TextBlock Name="CommentBlock" Grid.Row="1" Margin="10,5,10,5" TextWrapping="Wrap" Text="Top Left Textblock" VerticalAlignment="Top" FontSize="16"/>
+        </Grid>
         <Canvas Name="BoardCanvas">
-
         </Canvas>
         <Image Name="ClickToStartImage" Width="315" Height="159" Source="src/img/click_to_start.png" VerticalAlignment="Center" HorizontalAlignment="Center"/>
     </Grid>

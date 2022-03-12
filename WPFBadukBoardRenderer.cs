@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Windows.Controls;
 using Baduk;
 
 namespace JosekiMaster
@@ -88,12 +87,12 @@ namespace JosekiMaster
                 SolidColorBrush WoodenBrush = new SolidColorBrush(WoodenColor);
 
                 BoardPolygon = new Polygon();
-                BoardPolygon.Stroke = System.Windows.Media.Brushes.Black;
+                BoardPolygon.Stroke = Brushes.Black;
                 BoardPolygon.Fill = WoodenBrush;
-                System.Windows.Point Point1 = new System.Windows.Point(pos_x, pos_y);
-                System.Windows.Point Point2 = new System.Windows.Point(pos_x + Width, pos_y);
-                System.Windows.Point Point3 = new System.Windows.Point(pos_x + Width, pos_y + Height);
-                System.Windows.Point Point4 = new System.Windows.Point(pos_x, pos_y + Height);
+                Point Point1 = new Point(pos_x, pos_y);
+                Point Point2 = new Point(pos_x + Width, pos_y);
+                Point Point3 = new Point(pos_x + Width, pos_y + Height);
+                Point Point4 = new Point(pos_x, pos_y + Height);
                 PointCollection myPointCollection = new PointCollection();
                 myPointCollection.Add(Point1);
                 myPointCollection.Add(Point2);
@@ -107,7 +106,7 @@ namespace JosekiMaster
                 for (int i = 0; i < Board.size_x; i++)
                 {
                     Line CurrentLine = new Line();
-                    CurrentLine.Stroke = System.Windows.Media.Brushes.Black;
+                    CurrentLine.Stroke = Brushes.Black;
                     CurrentLine.StrokeThickness = 1;
                     CurrentLine.X1 = pos_x + margin + i * cell_size;
                     CurrentLine.X2 = pos_x + margin + i * cell_size;
@@ -121,7 +120,7 @@ namespace JosekiMaster
                 for (int i = 0; i < Board.size_y; i++)
                 {
                     Line CurrentLine = new Line();
-                    CurrentLine.Stroke = System.Windows.Media.Brushes.Black;
+                    CurrentLine.Stroke = Brushes.Black;
                     CurrentLine.StrokeThickness = 1;
                     CurrentLine.X1 = pos_x + margin;
                     CurrentLine.X2 = pos_x + margin + cell_size * (Board.size_x - 1);
@@ -142,8 +141,8 @@ namespace JosekiMaster
                     for (int i = 0; i < 9; i++)
                     {
                         Ellipse myEllipse = new Ellipse();
-                        myEllipse.Stroke = System.Windows.Media.Brushes.Black;
-                        myEllipse.Fill = System.Windows.Media.Brushes.Black;
+                        myEllipse.Stroke = Brushes.Black;
+                        myEllipse.Fill = Brushes.Black;
                         myEllipse.Width = 7;
                         myEllipse.Height = 7;
                         int hoshi_left = pos_x + margin + hoshi_coords[2 * i] * cell_size - 3;
@@ -159,8 +158,8 @@ namespace JosekiMaster
                 for (int i = 0; i < Board.marks.Count; i++)
                 {
                     Ellipse MarkEllipse = new Ellipse();
-                    MarkEllipse.Stroke = System.Windows.Media.Brushes.Black;
-                    MarkEllipse.Fill = System.Windows.Media.Brushes.Yellow;
+                    MarkEllipse.Stroke = Brushes.Black;
+                    MarkEllipse.Fill = Brushes.Yellow;
                     MarkEllipse.Width = 7;
                     MarkEllipse.Height = 7;
                     int mark_left = pos_x + margin + Board.marks[i].X * cell_size - 3;
@@ -260,7 +259,7 @@ namespace JosekiMaster
                 BoardPanel.Children.Add(mark_ellipces[i]);
             }
             BoardPanel.Children.Add(KORectangle);
-            if(ShowHint)
+            if (ShowHint)
             {
                 BoardPanel.Children.Add(HintRectangle);
             }
